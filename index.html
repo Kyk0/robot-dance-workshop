@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teach a Robot Your Dance</title>
+<meta name="description" content="Hands-on workshop on motion retargeting and robot learning. ATR Lab, Department of Computer Science, Kent State University.">
+<link rel="icon" href="assets/logo_atr.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>
+  :root { --paper: #f4efe5; --ink: #0f1e45; --gold: #eaab00; --soft: #5b6478; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: Archivo, "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px; line-height: 1.5; overflow-x: hidden;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 760px) { .wrap { padding: 0 40px; } }
+
+  /* header */
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 16px;
+         padding: 20px 0 14px; border-bottom: 2px solid var(--ink); }
+  .org { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; line-height: 1.35; }
+  .logos { display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
+  .logos img { height: 52px; width: auto; }
+  @media (max-width: 480px) { .org { font-size: 10px; letter-spacing: .05em; } .logos { gap: 8px; } .logos img { height: 40px; } }
+
+  /* hero */
+  .hero { display: grid; gap: 28px; padding: 28px 0 44px; }
+  @media (min-width: 860px) {
+    .hero { grid-template-columns: 1fr 400px; gap: 48px; align-items: stretch; }
+    .hero-photo img { height: 100%; aspect-ratio: auto; }
+  }
+  .hero-photo { position: relative; }
+  .hero-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 35%; }
+  .tag { font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+  h1 {
+    margin-top: 10px; font-weight: 900; font-stretch: 72%; text-transform: uppercase;
+    font-size: clamp(60px, 15vw, 120px); line-height: .86; letter-spacing: -.005em;
+  }
+  h1 span { background: var(--gold); padding: 0 .06em; }
+  .lead { margin-top: 22px; font-size: 19px; line-height: 1.45; max-width: 32em; }
+  .when { margin-top: 24px; border-top: 2px solid var(--ink); max-width: 34em; }
+  .when div { display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+              padding: 9px 0; border-bottom: 1px solid rgba(15,30,69,.25); }
+  .when dt { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); }
+  .when dd { font-size: 22px; font-weight: 800; line-height: 1.2; text-align: right; }
+  .note { margin-top: 14px; font-size: 16px; }
+  @media (max-width: 480px) { .when dd { font-size: 19px; } }
+  .label { position: absolute; left: 0; bottom: 0; background: var(--ink); color: var(--paper);
+           font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 5px 10px; }
+
+  /* sections */
+  section.block { border-top: 2px solid var(--ink); padding: 36px 0 44px; }
+  h2 { font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: clamp(40px, 9vw, 64px); line-height: .9; }
+
+  .same { margin-top: 22px; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 12px; row-gap: 2px; }
+  .same b { font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+  .same i { font-style: normal; font-size: 14px; color: var(--soft); }
+  .strip { margin-top: 12px; display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: start; gap: 6px; }
+  @media (min-width: 760px) { .strip { gap: 14px; } }
+  .strip img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+  .strip .arrow { font-size: 22px; font-weight: 800; align-self: center; margin-top: -2em; }
+  .strip figcaption { margin-top: 8px; font-size: 14px; line-height: 1.3; }
+  .strip figcaption b { display: block; font-size: 15px; font-weight: 800; }
+  @media (max-width: 480px) {
+    .strip .arrow { font-size: 16px; }
+    .strip figcaption { font-size: 12px; } .strip figcaption b { font-size: 13px; }
+  }
+
+  .steps { list-style: none; margin-top: 36px; display: grid; gap: 24px 16px; grid-template-columns: 1fr 1fr; }
+  @media (min-width: 860px) { .steps { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
+  .steps li { border-top: 2px solid var(--ink); padding-top: 12px; }
+  .steps .num { display: inline-block; font-weight: 900; font-stretch: 72%; font-size: 28px; line-height: 1;
+                border-bottom: 4px solid var(--gold); }
+  .steps h3 { margin-top: 8px; font-size: 18px; font-weight: 800; line-height: 1.2; }
+  .steps p { margin-top: 4px; font-size: 15px; line-height: 1.45; }
+
+  .gallery { margin-top: 36px; display: grid; gap: 8px; grid-template-columns: repeat(3, 1fr); }
+  @media (min-width: 760px) { .gallery { gap: 20px; } }
+  .gallery img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; object-position: 50% 40%; }
+  .cap { margin-top: 8px; font-size: 14px; color: var(--soft); }
+  .tools { margin-top: 28px; font-size: 14px; color: var(--soft); max-width: 48em; }
+
+  .two { display: grid; gap: 36px; }
+  @media (min-width: 860px) { .two { grid-template-columns: 1fr 1fr; gap: 48px; } }
+  .list { list-style: none; margin-top: 20px; }
+  .list li { padding: 12px 0; border-top: 1px solid var(--ink); }
+  .list li:last-child { border-bottom: 1px solid var(--ink); }
+  .list b { font-weight: 800; }
+  .signup p { margin-top: 20px; font-size: 22px; font-weight: 800; line-height: 1.3; }
+  .signup p.small { margin-top: 10px; font-size: 16px; font-weight: 400; }
+
+  footer { border-top: 2px solid var(--ink); padding: 22px 0 36px; display: flex; gap: 16px;
+           justify-content: space-between; align-items: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="org">Advanced Telerobotics Research Lab<br>Department of Computer Science, Kent State University</div>
+    <div class="logos">
+      <img src="assets/logo_atr.png" alt="ATR Lab logo" width="160" height="165">
+      <img src="assets/logo_ksu.png" alt="Kent State Computer Science logo" width="160" height="160">
+    </div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="tag">Hands-on workshop</div>
+      <h1>Teach a robot <span>your</span> dance</h1>
+      <p class="lead">Motion retargeting and robot learning. Bring a short phone video of yourself dancing.
+        We turn your moves into 3D human motion, retarget them to the Booster K1 humanoid,
+        train a policy in simulation, and run it on the real robot.</p>
+
+      <!-- ===== EVENT DETAILS: edit date, time and place here ===== -->
+      <dl class="when">
+        <div><dt>Date</dt><dd>Saturday, October 24, 2026</dd></div>
+        <div><dt>Time</dt><dd>10:00 AM</dd></div>
+        <div><dt>Place</dt><dd>MSB 228, Kent State</dd></div>
+      </dl>
+      <!-- ===== end of event details ===== -->
+
+      <p class="note">No robotics experience needed. Open to all students.</p>
+    </div>
+    <figure class="hero-photo">
+      <img src="assets/j_real.jpg" alt="The real Booster K1 humanoid robot jumping in the lab" width="762" height="1200">
+      <span class="label">Real robot</span>
+    </figure>
+  </section>
+
+  <section class="block" id="how">
+    <h2>How it works</h2>
+
+    <div class="same"><b>One move, start to finish</b><i>the same jump at the same moment</i></div>
+    <div class="strip">
+      <!-- To show the video frame as step 1, add assets/j_video.jpg and replace the first figure with:
+      <figure><img src="assets/j_video.jpg" alt="Frame from the dance video" style="object-position:50% 12%">
+        <figcaption><b>1. Video</b>Any dance clip</figcaption></figure>
+      and renumber the next two figures 2 and 3. -->
+      <figure><img src="assets/j_smplx.jpg" alt="3D human body model with blue keypoints" style="object-position:50% 30%" width="500" height="740">
+        <figcaption><b>1. 3D body</b>Motion capture</figcaption></figure>
+      <div class="arrow" aria-hidden="true">→</div>
+      <figure><img src="assets/j_k1sim.jpg" alt="K1 robot in simulation doing the same jump" style="object-position:50% 40%" width="400" height="520">
+        <figcaption><b>2. Robot in simulation</b>Retargeted motion</figcaption></figure>
+      <div class="arrow" aria-hidden="true">→</div>
+      <figure><img src="assets/j_k1policy.jpg" alt="Trained policy in simulation with blue reference points" style="object-position:50% 40%" width="400" height="520">
+        <figcaption><b>3. Trained policy</b>RL in simulation</figcaption></figure>
+    </div>
+
+    <ol class="steps">
+      <li>
+        <span class="num">01</span>
+        <h3>Motion capture</h3>
+        <p>Your video becomes a 3D body moving in space.</p>
+      </li>
+      <li>
+        <span class="num">02</span>
+        <h3>Retargeting</h3>
+        <p>The human motion is mapped onto the robot's joints and proportions.</p>
+      </li>
+      <li>
+        <span class="num">03</span>
+        <h3>Training in simulation</h3>
+        <p>Reinforcement learning teaches the robot to follow the motion without falling.</p>
+      </li>
+      <li>
+        <span class="num">04</span>
+        <h3>Sim-to-real</h3>
+        <p>The trained policy runs on the real K1.</p>
+      </li>
+    </ol>
+
+    <div class="gallery">
+      <img src="assets/p_real_tangerine.jpg" alt="The real K1 robot dancing" loading="lazy" width="864" height="1200">
+      <img src="assets/p_real_hawaii_scuba.jpg" alt="The real K1 robot dancing" loading="lazy" width="864" height="1200">
+      <img src="assets/p_real_break_bot.jpg" alt="The real K1 robot dancing" loading="lazy" width="864" height="1200">
+    </div>
+    <p class="cap">More dances on the real K1.</p>
+
+    <p class="tools">Tools: GVHMR (video to 3D motion), GMR (retargeting), MuJoCo and mjlab (simulation and training).</p>
+  </section>
+
+  <section class="block two">
+    <div id="bring">
+      <h2>What to bring</h2>
+      <ul class="list">
+        <li><b>A short phone video of yourself dancing,</b> 10–20 seconds.</li>
+        <li><b>Full body in frame,</b> head to feet, the whole time.</li>
+        <li><b>Steady camera.</b> Use a tripod or ask a friend to hold it still.</li>
+        <li><b>A laptop</b> is optional.</li>
+      </ul>
+    </div>
+    <div class="signup" id="signup">
+      <h2>Sign-up</h2>
+      <p>Sign-up form coming soon — just show up.</p>
+      <p class="small">No robotics experience needed. Open to all students.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="org">Advanced Telerobotics Research (ATR) Lab<br>Department of Computer Science, Kent State University</div>
+    <div class="logos">
+      <img src="assets/logo_atr.png" alt="" width="160" height="165">
+      <img src="assets/logo_ksu.png" alt="" width="160" height="160">
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
